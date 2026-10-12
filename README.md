@@ -91,3 +91,6 @@ Open `http://127.0.0.1:8000/docs` to explore the API.
 ```powershell
 python -m pytest -q
 ```
+
+demo video link :
+https://www.loom.com/share/45be0ab81057432f9165835c8418c10a
