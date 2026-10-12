@@ -1,0 +1,49 @@
+﻿services:
+  db:
+    image: postgres:18
+    environment:
+      POSTGRES_DB: lenny_growth_assistant
+      POSTGRES_USER: ${POSTGRES_USER:-lenny}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-lenny} -d lenny_growth_assistant"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  ollama:
+    image: ollama/ollama:latest
+    profiles: ["local-ai"]
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-lenny}:${POSTGRES_PASSWORD}@db:5432/lenny_growth_assistant
+      MODEL_PROVIDER: ${MODEL_PROVIDER:-ollama}
+      OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://ollama:11434}
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-qwen2.5:3b}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      CLAUDE_AGENT_SDK_MODEL: ${CLAUDE_AGENT_SDK_MODEL:-claude-sonnet-4-5}
+      PI_CODING_AGENT_PROVIDER: ${PI_CODING_AGENT_PROVIDER:-ollama}
+      PI_CODING_AGENT_MODEL: ${PI_CODING_AGENT_MODEL:-qwen2.5:3b}
+      PI_CODING_AGENT_EXECUTABLE: pi
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
+  ollama_data:

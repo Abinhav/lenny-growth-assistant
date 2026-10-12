@@ -1,0 +1,8 @@
+
+fastapi>=0.115.0,<1.0.0
+uvicorn[standard]>=0.30.0,<1.0.0
+pydantic-settings>=2.5.0,<3.0.0
+psycopg[binary]>=3.2,<4.0
+openai>=1.50.0,<3.0.0
+anthropic>=0.40.0,<2.0.0
+claude-agent-sdk>=0.2.165,<0.3.0
